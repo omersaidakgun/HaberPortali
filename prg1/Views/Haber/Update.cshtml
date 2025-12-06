@@ -1,0 +1,60 @@
+﻿@{
+    Layout = "_LayoutAdmin";
+}
+@model prg1.ViewModels.HaberModel
+@section CardHeader {
+    <span>Haber Düzenle</span>
+}
+
+<div class="row">
+    <div class="col-md-8">
+        <form asp-controller="Haber" asp-action="Update" method="post" enctype="multipart/form-data">
+
+            <input asp-for="Id" type="hidden" />
+            <input asp-for="ResimYolu" type="hidden" />
+
+            <div class="mb-2">
+                <label asp-for="Baslik"></label>
+                <input asp-for="Baslik" class="form-control" />
+                <span class="text-danger" asp-validation-for="Baslik"></span>
+            </div>
+
+            <div class="mb-2">
+                <label asp-for="Icerik"></label>
+                <textarea asp-for="Icerik" class="form-control" rows="4"></textarea>
+                <span class="text-danger" asp-validation-for="Icerik"></span>
+            </div>
+
+            <div class="mb-2">
+                <label>Kategori</label>
+                <select asp-for="CategoryId" class="form-control" asp-items="ViewBag.Categories">
+                    <option value="">Seçiniz</option>
+                </select>
+                <span class="text-danger" asp-validation-for="CategoryId"></span>
+            </div>
+
+            <div class="mb-2">
+                <label>Resim (Değiştirmek için seçin)</label>
+                <input type="file" name="resim" class="form-control" />
+                @if (!string.IsNullOrEmpty(Model.ResimYolu))
+                {
+                    <small class="text-muted">Şu anki resim: @Model.ResimYolu</small>
+                }
+            </div>
+
+            <div class="mb-2">
+                <input asp-for="IsActive" class="form-check-inline" />
+                <label asp-for="IsActive"></label>
+            </div>
+
+            <div class="mb-2">
+                <input type="submit" value="Güncelle" class="btn btn-primary btn-sm" />
+                <a asp-action="Index" class="btn btn-secondary btn-sm">İptal</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

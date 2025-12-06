@@ -1,0 +1,30 @@
+﻿@model prg1.Models.Category
+@{
+    ViewData["Title"] = "Kategori Sil";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+@section CardHeader {
+    <span>Kategori Sil</span>
+}
+
+<div class="row">
+    <div class="col-md-6 offset-md-3">
+        <div class="card border-danger">
+            <div class="card-header bg-danger text-white">
+                <i class="fa fa-trash"></i> Silme Onayı
+            </div>
+            <div class="card-body text-center">
+                <p class="lead">
+                    <strong>@Model.Name</strong> kategorisini silmek istediğinize emin misiniz?
+                </p>
+
+                <form asp-action="Delete" method="post">
+                    <input type="hidden" asp-for="Id" />
+                    <button type="submit" class="btn btn-danger">Evet, Sil</button>
+                    <a asp-action="Index" class="btn btn-secondary">Hayır, Vazgeç</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

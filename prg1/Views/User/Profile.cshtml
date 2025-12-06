@@ -1,0 +1,63 @@
+﻿@model prg1.ViewModels.RegisterModel
+@{
+    ViewData["Title"] = "Profil Bilgileri";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+@section CardHeader {
+    <span>Kullanıcı Bilgileri</span>
+}
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="alert alert-info">
+            <i class="fa fa-info-circle"></i> Profil fotoğrafınızı veya şifrenizi değiştirmek için ilgili alanları doldurunuz. Değişiklik yapmak istemiyorsanız şifre alanlarını boş bırakmayınız (Mevcut şifrenizi giriniz).
+        </div>
+
+        <form method="post" asp-action="Profile" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="mb-3">
+                <label asp-for="FullName" class="form-label"></label>
+                <input asp-for="FullName" class="form-control" />
+                <span class="text-danger" asp-validation-for="FullName"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="UserName" class="form-label"></label>
+                <input asp-for="UserName" class="form-control" />
+                <span class="text-danger" asp-validation-for="UserName"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Email" class="form-label"></label>
+                <input asp-for="Email" class="form-control" />
+                <span class="text-danger" asp-validation-for="Email"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Password" class="form-label"></label>
+                <input asp-for="Password" type="password" class="form-control" />
+                <span class="text-danger" asp-validation-for="Password"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="PasswordConfirm" class="form-label"></label>
+                <input asp-for="PasswordConfirm" type="password" class="form-control" />
+                <span class="text-danger" asp-validation-for="PasswordConfirm"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="PhotoFile" class="form-label"></label>
+                <input asp-for="PhotoFile" class="form-control" type="file" />
+                <span class="text-danger" asp-validation-for="PhotoFile"></span>
+            </div>
+
+            <div class="mb-3">
+                <input type="submit" value="Güncelle" class="btn btn-primary" />
+                <a asp-controller="Admin" asp-action="Index" class="btn btn-secondary">İptal</a>
+            </div>
+
+        </form>
+    </div>
+</div>

@@ -1,0 +1,41 @@
+﻿@model prg1.ViewModels.UserModel
+@{
+    ViewData["Title"] = "Üye Sil";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+@section CardHeader {
+    <span>Üye Silme İşlemi</span>
+}
+
+<div class="row">
+    <div class="col-md-6 offset-md-3">
+        <div class="card border-danger">
+            <div class="card-header bg-danger text-white">
+                <i class="fa fa-exclamation-triangle"></i> Dikkat!
+            </div>
+            <div class="card-body text-center">
+                <h4 class="card-title text-danger">Silme Onayı</h4>
+                <p class="card-text">
+                    Aşağıdaki üyeyi kalıcı olarak silmek üzeresiniz. <br />
+                    Bu işlem geri alınamaz!
+                </p>
+
+                <div class="alert alert-light border">
+                    <strong>Ad Soyad:</strong> @Model.FullName <br />
+                    <strong>Kullanıcı Adı:</strong> @Model.UserName <br />
+                    <strong>E-Posta:</strong> @Model.Email
+                </div>
+
+                <form asp-action="Delete" method="post">
+                    <input type="hidden" asp-for="Id" />
+
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fa fa-trash"></i> Evet, Sil
+                    </button>
+                    <a asp-action="Index" class="btn btn-secondary">Hayır, Vazgeç</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
