@@ -12,7 +12,7 @@ namespace prg1.Models
 
         
         public DbSet<Category> Categories { get; set; } 
-        public DbSet<News> News { get; set; }
+        public DbSet<Haber> News { get; set; }
         public DbSet<Todo> Todos { get; set; }
     }
 }

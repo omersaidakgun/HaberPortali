@@ -5,7 +5,7 @@
 namespace prg1.Migrations
 {
     /// <inheritdoc />
-    public partial class mig8 : Migration
+    public partial class mig2 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

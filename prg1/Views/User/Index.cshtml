@@ -1,7 +1,7 @@
 ﻿@model List<prg1.ViewModels.UserModel>
 @{
-    ViewData["Title"] = "Üye Listesi";
-    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    
+    Layout = "_LayoutAdmin";
 }
 
 @section CardHeader {
@@ -32,11 +32,11 @@
                         <td style="width: 80px;">
                             @if (string.IsNullOrEmpty(item.ImagePath) || item.ImagePath == "no-img.png")
                             {
-                                <img src="/userphotos/no-img.png" width="50" height="50" class="rounded-circle border" />
+                                <img src="/img/default.png" width="50" height="50" class="rounded-circle border" />
                             }
                             else
                             {
-                                <img src="/userphotos/@item.ImagePath" width="50" height="50" class="rounded-circle border" style="object-fit:cover;" />
+                                <img src="/img/@item.ImagePath" alt="Profil Resmi" width="50" height="50" class="rounded-circle border" style="object-fit:cover;" />
                             }
                         </td>
                         <td class="align-middle">@item.FullName</td>
@@ -56,5 +56,4 @@
             </tbody>
         </table>
     </div>
-</div>
 </div>

@@ -1,56 +1,49 @@
 ﻿@model List<prg1.ViewModels.UserRoleModel>
+
 @{
-    ViewData["Title"] = "Rol Atama";
-    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    
+    Layout = "_LayoutAdmin";
 }
 
-@section CardHeader {
-    <span>Rol Yönetimi</span>
-}
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Rol Atama: @ViewBag.UserName</h6>
+    </div>
+    <div class="card-body">
 
-<div class="table-responsive">
-    <table class="table table-bordered table-hover">
-        <thead>
-            <tr>
-                <th>Rol Adı</th>
-                <th>Mevcut Durum</th>
-                <th>İşlem</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
-                <tr>
-                    <td>@item.RoleName</td>
-                    <td>
-                        @if (item.IsSelected)
-                        {
-                            <span class="badge bg-success">Yetkisi Var</span>
-                        }
-                        else
-                        {
-                            <span class="badge bg-secondary">Yetkisi Yok</span>
-                        }
-                    </td>
-                    <td>
-                        @if (item.IsSelected)
-                        {
-                            <a asp-action="UserRoleDelete" asp-route-id="@item.RoleId" asp-route-userId="@item.UserId" class="btn btn-danger btn-sm">
-                                <i class="fa fa-minus-circle"></i> Yetkiyi Al
-                            </a>
-                        }
-                        else
-                        {
-                            <a asp-action="UserRoleAdd" asp-route-id="@item.RoleId" asp-route-userId="@item.UserId" class="btn btn-success btn-sm">
-                                <i class="fa fa-plus-circle"></i> Yetki Ver
-                            </a>
-                        }
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-    <div class="mt-3">
-        <a asp-action="Index" class="btn btn-secondary">Listeye Dön</a>
+        <form method="post">
+            <input type="hidden" name="userId" value="@ViewBag.UserId" />
+
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Rol Adı</th>
+                        <th style="width: 150px;">Durum</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int i = 0; i < Model.Count; i++)
+                    {
+                        <tr>
+                            <td>
+                                @Model[i].RoleName
+                                <input type="hidden" asp-for="@Model[i].RoleId" />
+                                <input type="hidden" asp-for="@Model[i].RoleName" />
+                            </td>
+                            <td>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" asp-for="@Model[i].IsSelected" id="role_@i">
+                                    <label class="custom-control-label" for="role_@i">Yetki Ver</label>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            <button type="submit" class="btn btn-primary mt-3">Değişiklikleri Kaydet</button>
+            <a asp-action="Index" class="btn btn-secondary mt-3">İptal</a>
+        </form>
+
     </div>
 </div>

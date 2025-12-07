@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Http;
 
 namespace prg1.ViewModels
 {
@@ -16,6 +17,9 @@ namespace prg1.ViewModels
 
         [Display(Name = "Haber Görseli")]
         public string? ResimYolu { get; set; }
+
+        [Display(Name = "Resim Seçiniz")]
+        public IFormFile? ResimDosyasi { get; set; }
 
         [Display(Name = "Kategori Seçiniz")]
         [Required(ErrorMessage = "Kategori Seçimi Zorunludur")]

@@ -2,8 +2,10 @@ using AspNetCoreHero.ToastNotification;
 using AspNetCoreHero.ToastNotification.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.FileProviders; 
+using Microsoft.Extensions.FileProviders;
+using prg1.Hubs;
 using prg1.Models;
+using prg1.Repositories;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -39,11 +41,15 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.SlidingExpiration = true;
     options.ExpireTimeSpan = TimeSpan.FromDays(7);
 });
-
+builder.Services.AddSignalR();
 builder.Services.AddControllersWithViews();
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 builder.Services.AddNotyf(config => { config.DurationInSeconds = 10; config.IsDismissable = true; config.Position = NotyfPosition.BottomRight; });
 
+builder.Services.AddScoped(typeof(GenericRepository<>)); 
+builder.Services.AddScoped<HaberRepository>();           
+builder.Services.AddScoped<CategoryRepository>();        
+builder.Services.AddScoped<TodoRepository>();
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
@@ -64,5 +70,7 @@ app.UseNotyf();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+app.MapHub<GeneralHub>("/generalHub");
 
 app.Run();

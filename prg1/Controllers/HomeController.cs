@@ -1,4 +1,5 @@
 ﻿using AspNetCoreHero.ToastNotification.Abstractions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using prg1.Models;
@@ -10,21 +11,42 @@ namespace prg1.Controllers
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
-        private readonly RoleManager<AppRole> _roleManager; 
+        private readonly RoleManager<AppRole> _roleManager;
         private readonly INotyfService _notyf;
+        private readonly AppDbContext _context;
 
         
-        public HomeController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, RoleManager<AppRole> roleManager, INotyfService notyf)
+        public HomeController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, RoleManager<AppRole> roleManager, INotyfService notyf, AppDbContext context)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _roleManager = roleManager;
             _notyf = notyf;
+            _context = context;
         }
 
+        
         public IActionResult Index()
         {
             return View();
+        }
+
+        
+        [Authorize(Roles = "Admin")]
+        public IActionResult Panel()
+        {
+            return View();
+        }
+
+        
+        [HttpGet]
+        public IActionResult GetCounts()
+        {
+            var userCount = _userManager.Users.Count();
+            var categoryCount = _context.Categories.Count();
+            var todoCount = _context.Todos.Count();
+
+            return Json(new { users = userCount, categories = categoryCount, todos = todoCount });
         }
 
         
@@ -36,25 +58,32 @@ namespace prg1.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(LoginModel model)
         {
-            if (ModelState.IsValid)
+            var user = await _userManager.FindByNameAsync(model.UserName);
+            if (user == null)
+            {
+                _notyf.Error("Girilen Kullanıcı Adı Kayıtlı Değildir!");
+                return View(model);
+            }
+
+            var signInResult = await _signInManager.PasswordSignInAsync(user, model.Password, model.KeepMe, true);
+
+            if (signInResult.Succeeded)
             {
                 
-                var result = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, model.KeepMe, false);
-                if (result.Succeeded)
-                {
-                    _notyf.Success("Giriş Başarılı");
-                    return RedirectToAction("Index", "User"); 
-                }
-                else
-                {
-                    ModelState.AddModelError("", "Kullanıcı adı veya şifre hatalı!");
-                    _notyf.Error("Giriş Başarısız");
-                }
+                return RedirectToAction("Index");
             }
+
+            if (signInResult.IsLockedOut)
+            {
+                _notyf.Error("Hesap kilitlendi.");
+                return View(model);
+            }
+
+            _notyf.Error("Kullanıcı Adı veya Parola Hatalı!");
             return View(model);
         }
 
-        
+       
         public IActionResult Register()
         {
             return View();
@@ -63,69 +92,70 @@ namespace prg1.Controllers
         [HttpPost]
         public async Task<IActionResult> Register(RegisterModel model)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                var user = new AppUser();
+                return View(model);
+            }
 
-                
+            
+            string firstName = "";
+            string lastName = "";
+
+            if (!string.IsNullOrEmpty(model.FullName))
+            {
                 string[] names = model.FullName.Trim().Split(' ');
-                user.FirstName = names[0];
-                user.LastName = names.Length > 1 ? string.Join(" ", names.Skip(1)) : "";
-
-                user.UserName = model.UserName;
-                user.Email = model.Email;
-                user.ImagePath = "no-img.png"; 
-
-               
-                var result = await _userManager.CreateAsync(user, model.Password);
-
-                if (result.Succeeded)
-                {
-                    
-
-                    
-                    if (!await _roleManager.RoleExistsAsync("Admin"))
-                        await _roleManager.CreateAsync(new AppRole { Name = "Admin" });
-
-                    
-                    if (!await _roleManager.RoleExistsAsync("Uye"))
-                        await _roleManager.CreateAsync(new AppRole { Name = "Uye" });
-
-                    
-                    
-                    if (_userManager.Users.Count() < 10 || user.UserName.ToLower().Contains("admin"))
-                    {
-                        await _userManager.AddToRoleAsync(user, "Admin");
-                    }
-                    else
-                    {
-                        
-                        await _userManager.AddToRoleAsync(user, "Uye");
-                    }
-
-                    _notyf.Success("Kayıt Başarılı! Giriş yapabilirsiniz.");
-                    return RedirectToAction("Login");
-                }
-
+                firstName = names[0]; 
                 
-                foreach (var item in result.Errors)
+                lastName = names.Length > 1 ? string.Join(" ", names.Skip(1)) : "";
+            }
+
+            var user = new AppUser
+            {
+                UserName = model.UserName,
+                Email = model.Email,
+                FirstName = firstName, 
+                LastName = lastName,   
+                ImagePath = "default.png"
+            };
+
+            var identityResult = await _userManager.CreateAsync(user, model.Password);
+
+            if (!identityResult.Succeeded)
+            {
+                foreach (var item in identityResult.Errors)
                 {
                     ModelState.AddModelError("", item.Description);
                     _notyf.Error(item.Description);
                 }
+                return View(model);
             }
-            return View(model);
+
+            
+            if (!await _roleManager.RoleExistsAsync("Uye"))
+            {
+                await _roleManager.CreateAsync(new AppRole { Name = "Uye" });
+            }
+
+            
+            if (!await _roleManager.RoleExistsAsync("Admin"))
+            {
+                await _roleManager.CreateAsync(new AppRole { Name = "Admin" });
+            }
+
+            
+            await _userManager.AddToRoleAsync(user, "Uye");
+
+            _notyf.Success("Üye Kaydı Yapılmıştır. Oturum Açınız");
+            return RedirectToAction("Login");
         }
 
         
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
-            _notyf.Information("Çıkış Yapıldı");
             return RedirectToAction("Login");
         }
 
-        
         public IActionResult AccessDenied()
         {
             return View();

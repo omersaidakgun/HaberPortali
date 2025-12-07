@@ -3,11 +3,12 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.SignalR; // SignalR kütüphanesi
-using prg1.Hubs; // GeneralHub'ın olduğu yer (Burası önemli!)
+using Microsoft.AspNetCore.SignalR; 
+using prg1.Hubs; 
 using prg1.Models;
 using prg1.Repositories;
 using prg1.ViewModels;
+using Microsoft.EntityFrameworkCore;
 
 namespace prg1.Controllers
 {
@@ -18,7 +19,7 @@ namespace prg1.Controllers
         private readonly CategoryRepository _categoryRepository;
         private readonly INotyfService _notyf;
         private readonly IMapper _mapper;
-        private readonly IHubContext<GeneralHub> _generalHub; // SignalR Bağlantısı
+        private readonly IHubContext<GeneralHub> _generalHub; 
 
         public HaberController(HaberRepository haberRepository, CategoryRepository categoryRepository, INotyfService notyf, IMapper mapper, IHubContext<GeneralHub> generalHub)
         {
@@ -26,13 +27,17 @@ namespace prg1.Controllers
             _categoryRepository = categoryRepository;
             _notyf = notyf;
             _mapper = mapper;
-            _generalHub = generalHub; // Dependency Injection ile alıyoruz
+            _generalHub = generalHub; 
         }
 
         public async Task<IActionResult> Index()
         {
-            var haberler = await _haberRepository.GetAllAsync();
+            
+            var haberler = await _haberRepository.GetHaberlerWithKategoriAsync();
+
+            
             var model = _mapper.Map<List<HaberModel>>(haberler);
+
             return View(model);
         }
 
@@ -51,7 +56,7 @@ namespace prg1.Controllers
                 return View(model);
             }
 
-            string resimAdi = "no-image.png";
+            string resimAdi = "defaultimg.png";
             if (resim != null)
             {
                 string uzanti = Path.GetExtension(resim.FileName);
@@ -70,7 +75,7 @@ namespace prg1.Controllers
 
             await _haberRepository.AddAsync(haber);
 
-            // SignalR: Tüm client'lara yeni haber sayısını gönder
+            
             int haberCount = _haberRepository.Where(h => h.IsActive == true).Count();
             await _generalHub.Clients.All.SendAsync("onHaberAdd", haberCount);
 
@@ -117,7 +122,7 @@ namespace prg1.Controllers
 
             await _haberRepository.UpdateAsync(haber);
 
-            // SignalR: Güncelleme bildirimi (isteğe bağlı ama sayısı değişebilir diye ekledim)
+            
             int haberCount = _haberRepository.Where(h => h.IsActive == true).Count();
             await _generalHub.Clients.All.SendAsync("onHaberUpdate", haberCount);
 
@@ -137,7 +142,7 @@ namespace prg1.Controllers
         {
             await _haberRepository.DeleteAsync(model.Id);
 
-            // SignalR: Silinince sayıyı düşür
+            
             int haberCount = _haberRepository.Where(h => h.IsActive == true).Count();
             await _generalHub.Clients.All.SendAsync("onHaberDelete", haberCount);
 

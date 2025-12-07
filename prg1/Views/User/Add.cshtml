@@ -1,7 +1,7 @@
 ﻿@model prg1.ViewModels.UserModel
 @{
     ViewData["Title"] = "Yeni Üye Ekle";
-    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    Layout = "_LayoutAdmin";
 }
 
 @section CardHeader {
@@ -53,6 +53,10 @@
                     <a asp-action="Index" class="btn btn-secondary">İptal</a>
                 </div>
             </div>
+
+        </form>
+        <form method="post" asp-action="Create">
+            <div asp-validation-summary="All" class="text-danger"></div>
 
         </form>
     </div>

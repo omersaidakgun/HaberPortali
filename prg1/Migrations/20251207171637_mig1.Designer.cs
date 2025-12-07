@@ -12,8 +12,8 @@ using prg1.Models;
 namespace prg1.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251206204107_mig7")]
-    partial class mig7
+    [Migration("20251207171637_mig1")]
+    partial class mig1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -295,39 +295,6 @@ namespace prg1.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("Haber");
-                });
-
-            modelBuilder.Entity("prg1.Models.News", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CategoryId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("ImageUrl")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CategoryId");
-
                     b.ToTable("News");
                 });
 
@@ -419,17 +386,6 @@ namespace prg1.Migrations
                 {
                     b.HasOne("prg1.Models.Category", "Category")
                         .WithMany("Haberler")
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Category");
-                });
-
-            modelBuilder.Entity("prg1.Models.News", b =>
-                {
-                    b.HasOne("prg1.Models.Category", "Category")
-                        .WithMany()
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();

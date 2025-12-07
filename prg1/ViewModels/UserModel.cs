@@ -24,6 +24,6 @@ namespace prg1.ViewModels
         public string Password { get; set; }
 
         public string Role { get; set; }
-        public string? ImagePath { get; set; }
+        public string ImagePath { get; set; } = "/img/default-user.png";
     }
 }

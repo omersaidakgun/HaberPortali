@@ -6,33 +6,11 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace prg1.Migrations
 {
     /// <inheritdoc />
-    public partial class mig3 : Migration
+    public partial class mig1 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_Haberler_Categories_CategoryId",
-                table: "Haberler");
-
-            migrationBuilder.DropPrimaryKey(
-                name: "PK_Haberler",
-                table: "Haberler");
-
-            migrationBuilder.RenameTable(
-                name: "Haberler",
-                newName: "Haber");
-
-            migrationBuilder.RenameIndex(
-                name: "IX_Haberler_CategoryId",
-                table: "Haber",
-                newName: "IX_Haber_CategoryId");
-
-            migrationBuilder.AddPrimaryKey(
-                name: "PK_Haber",
-                table: "Haber",
-                column: "Id");
-
             migrationBuilder.CreateTable(
                 name: "AspNetRoles",
                 columns: table => new
@@ -52,7 +30,8 @@ namespace prg1.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    FullName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ImagePath = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -75,26 +54,37 @@ namespace prg1.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "News",
+                name: "Categories",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    Created = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Updated = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Categories", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Todos",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CategoryId = table.Column<int>(type: "int", nullable: false)
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsOK = table.Column<int>(type: "int", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    Created = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Updated = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_News", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_News_Categories_CategoryId",
-                        column: x => x.CategoryId,
-                        principalTable: "Categories",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                    table.PrimaryKey("PK_Todos", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -203,6 +193,31 @@ namespace prg1.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "News",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Baslik = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Icerik = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ResimYolu = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Created = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Updated = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    CategoryId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_News", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_News_Categories_CategoryId",
+                        column: x => x.CategoryId,
+                        principalTable: "Categories",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -246,23 +261,11 @@ namespace prg1.Migrations
                 name: "IX_News_CategoryId",
                 table: "News",
                 column: "CategoryId");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Haber_Categories_CategoryId",
-                table: "Haber",
-                column: "CategoryId",
-                principalTable: "Categories",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_Haber_Categories_CategoryId",
-                table: "Haber");
-
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
@@ -282,36 +285,16 @@ namespace prg1.Migrations
                 name: "News");
 
             migrationBuilder.DropTable(
+                name: "Todos");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
 
-            migrationBuilder.DropPrimaryKey(
-                name: "PK_Haber",
-                table: "Haber");
-
-            migrationBuilder.RenameTable(
-                name: "Haber",
-                newName: "Haberler");
-
-            migrationBuilder.RenameIndex(
-                name: "IX_Haber_CategoryId",
-                table: "Haberler",
-                newName: "IX_Haberler_CategoryId");
-
-            migrationBuilder.AddPrimaryKey(
-                name: "PK_Haberler",
-                table: "Haberler",
-                column: "Id");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Haberler_Categories_CategoryId",
-                table: "Haberler",
-                column: "CategoryId",
-                principalTable: "Categories",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+            migrationBuilder.DropTable(
+                name: "Categories");
         }
     }
 }

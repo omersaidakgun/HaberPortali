@@ -53,6 +53,7 @@ namespace prg1.Controllers
         [HttpPost]
         public async Task<IActionResult> Add(UserModel model)
         {
+            ModelState.Remove("Id");
             if (!ModelState.IsValid)
             {
                 return View(model);
@@ -82,7 +83,7 @@ namespace prg1.Controllers
                 return View(model);
             }
 
-            // Rol Ekleme
+            
             var roleExist = await _roleManager.RoleExistsAsync("Uye");
             if (!roleExist)
             {
@@ -177,11 +178,10 @@ namespace prg1.Controllers
             return View(model);
         }
 
-        
+
         [HttpPost]
         public async Task<IActionResult> Profile(RegisterModel model)
         {
-            
             var userName = User.Identity.Name;
             var user = await _userManager.Users.FirstOrDefaultAsync(x => x.UserName == userName);
 
@@ -202,26 +202,34 @@ namespace prg1.Controllers
             
             if (model.PhotoFile != null)
             {
-                var rootFolder = _fileProvider.GetDirectoryContents("wwwroot");
-                var photoFolder = rootFolder.First(x => x.Name == "userphotos").PhysicalPath;
+                
+                
+                var folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "userphotos");
+
+                
+                if (!Directory.Exists(folderPath))
+                {
+                    Directory.CreateDirectory(folderPath);
+                }
 
                 
                 var filename = Guid.NewGuid().ToString() + Path.GetExtension(model.PhotoFile.FileName);
-                var photoPath = Path.Combine(photoFolder, filename);
+                var photoPath = Path.Combine(folderPath, filename);
 
-                using var stream = new FileStream(photoPath, FileMode.Create);
-                await model.PhotoFile.CopyToAsync(stream);
+                
+                using (var stream = new FileStream(photoPath, FileMode.Create))
+                {
+                    await model.PhotoFile.CopyToAsync(stream);
+                }
 
-                user.ImagePath = filename; 
+                user.ImagePath = filename;
             }
-
             
+
             var result = await _userManager.UpdateAsync(user);
 
-            
             if (!string.IsNullOrEmpty(model.Password))
             {
-                
                 await _userManager.RemovePasswordAsync(user);
                 await _userManager.AddPasswordAsync(user, model.Password);
             }
@@ -229,7 +237,7 @@ namespace prg1.Controllers
             if (result.Succeeded)
             {
                 _notyf.Success("Profiliniz güncellendi.");
-                return RedirectToAction("Profile"); 
+                return RedirectToAction("Profile");
             }
             else
             {
@@ -237,6 +245,70 @@ namespace prg1.Controllers
                 return View(model);
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> UserRole(string id)
+        {
+            
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null) return RedirectToAction("Index");
+
+            
+            var roles = _roleManager.Roles.ToList();
+
+            
+            var userRoles = await _userManager.GetRolesAsync(user);
+
+            
+            List<UserRoleModel> model = new List<UserRoleModel>();
+
+            foreach (var role in roles)
+            {
+                UserRoleModel m = new UserRoleModel();
+                m.RoleId = role.Id;
+                m.RoleName = role.Name;
+
+                
+                m.IsSelected = userRoles.Contains(role.Name);
+
+                model.Add(m);
+            }
+
+            ViewBag.UserId = user.Id;
+            ViewBag.UserName = user.UserName ?? user.FirstName; 
+
+            return View(model);
+        }
+
+        
+        [HttpPost]
+        public async Task<IActionResult> UserRole(List<UserRoleModel> model, string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+
+            foreach (var item in model)
+            {
+                if (item.IsSelected)
+                {
+                    
+                    await _userManager.AddToRoleAsync(user, item.RoleName);
+                }
+                else
+                {
+                    
+                    await _userManager.RemoveFromRoleAsync(user, item.RoleName);
+                }
+            }
+
+            return RedirectToAction("Index");
+        }
+
+
+
+
+
+
+
 
     }
 }

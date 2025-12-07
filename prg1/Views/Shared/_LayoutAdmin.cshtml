@@ -23,9 +23,9 @@
 
         <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
-            <a class="sidebar-brand d-flex align-items-center justify-content-center" asp-controller="Home" asp-action="Index">
+            <a class="sidebar-brand d-flex align-items-center justify-content-center" asp-controller="Admin" asp-action="Index">
                 <div class="sidebar-brand-icon rotate-n-15">
-                    <i class="fas fa-laugh-wink"></i>
+                    <i class="fas fa-newspaper"></i>
                 </div>
                 <div class="sidebar-brand-text mx-3">Haber Paneli</div>
             </a>
@@ -33,19 +33,20 @@
             <hr class="sidebar-divider my-0">
 
             <li class="nav-item">
-                <a class="nav-link" asp-controller="Home" asp-action="Index">
+                <a class="nav-link" asp-controller="Admin" asp-action="Index">
                     <i class="fas fa-fw fa-tachometer-alt"></i>
-                    <span>Ana Sayfa</span>
+                    <span>Yönetim Paneli</span>
                 </a>
+                
             </li>
 
             <hr class="sidebar-divider">
-            <div class="sidebar-heading">Yönetim</div>
+            <div class="sidebar-heading">İçerik Yönetimi</div>
 
             <li class="nav-item">
-                <a class="nav-link" asp-controller="User" asp-action="Index">
-                    <i class="fas fa-fw fa-users"></i>
-                    <span>Üyeler</span>
+                <a class="nav-link" asp-controller="Haber" asp-action="Index">
+                    <i class="fas fa-fw fa-newspaper"></i>
+                    <span>Haberler</span>
                 </a>
             </li>
 
@@ -56,6 +57,16 @@
                 </a>
             </li>
 
+            <hr class="sidebar-divider">
+            <div class="sidebar-heading">Kullanıcı & Sistem</div>
+
+            <li class="nav-item">
+                <a class="nav-link" asp-controller="User" asp-action="Index">
+                    <i class="fas fa-fw fa-users"></i>
+                    <span>Üyeler</span>
+                </a>
+            </li>
+
             <li class="nav-item">
                 <a class="nav-link" asp-controller="Todo" asp-action="Index">
                     <i class="fas fa-fw fa-check-square"></i>
@@ -63,7 +74,14 @@
                 </a>
             </li>
 
-            <hr class="sidebar-divider d-none d-md-block">
+            <hr class="sidebar-divider">
+
+            <li class="nav-item">
+                <a class="nav-link" asp-controller="Home" asp-action="Index" target="_blank">
+                    <i class="fas fa-fw fa-globe"></i>
+                    <span>Siteye Git</span>
+                </a>
+            </li>
 
             <div class="text-center d-none d-md-inline">
                 <button class="rounded-circle border-0" id="sidebarToggle"></button>
@@ -85,11 +103,11 @@
                                 <span class="mr-2 d-none d-lg-inline text-gray-600 small">
                                     @User.Identity.Name
                                 </span>
-                                <img class="img-profile rounded-circle" src="~/userphotos/no-img.png">
+                                <img class="img-profile rounded-circle" src="~/img//default.png">
                             </a>
                             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
                                  aria-labelledby="userDropdown">
-                                <a class="dropdown-item" asp-controller="User" asp-action="Profile">
+                                <a class="dropdown-item" asp-area="" asp-controller="User" asp-action="Profile">
                                     <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
                                     Profilim
                                 </a>
@@ -102,6 +120,7 @@
                         </li>
                     </ul>
                 </nav>
+
                 <div class="container-fluid">
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
                         <h1 class="h3 mb-0 text-gray-800">@ViewData["Title"]</h1>
@@ -146,7 +165,7 @@
                         <span aria-hidden="true">×</span>
                     </button>
                 </div>
-                <div class="modal-body">Oturumunuzu sonlandırmak için "Çıkış Yap" butonuna basınız.</div>
+                <div class="modal-body">Oturumunuzu kapatmak için "Çıkış Yap" butonuna tıklayınız.</div>
                 <div class="modal-footer">
                     <button class="btn btn-secondary" type="button" data-dismiss="modal">İptal</button>
                     <a class="btn btn-primary" asp-controller="Home" asp-action="Logout">Çıkış Yap</a>
