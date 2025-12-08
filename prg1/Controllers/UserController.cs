@@ -69,7 +69,7 @@ namespace prg1.Controllers
 
             user.UserName = model.UserName;
             user.Email = model.Email;
-            user.ImagePath = "no-img.png";
+            user.ImagePath = "img/default.png";
 
             var identityResult = await _userManager.CreateAsync(user, model.Password);
 
